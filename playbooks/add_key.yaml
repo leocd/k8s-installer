@@ -1,0 +1,8 @@
+---
+- name: 0. 免密设置
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: install ssh key
+    authorized_key: user={{ global.user }}
+                    key="{{ lookup('file', '/tmp/id_rsa.pub') }}"

@@ -1,0 +1,26 @@
+[master]
+172.16.1.10 node_name=kube-master-10 k8s_role=master ansible_ssh_user=leo ansible_become=true
+# k8s跑业务一定会有很多自己的镜像，选择了自建轻量级的docker registry v2
+# 如果资源充足，可以选择自建harbor
+# ansible master节点同时会run docker registry v2
+# node_name切勿重复，最好依照本文件格式命名
+# 配置的user已设置证书免密登录，sudo无需密码
+# 若无证书免密登录，需要增加ansible_ssh_pass，若sudo需要密码，需要增加ansible_sudo_pass
+
+[kube_master_group]
+172.16.1.11 node_name=kube-master-11 k8s_role=master ansible_ssh_user=leo ansible_become=true
+172.16.1.12 node_name=kube-master-12 k8s_role=master ansible_ssh_user=leo ansible_become=true
+
+[kube_worker]
+172.16.1.13 node_name=kube-worker-13 k8s_role=worker ansible_ssh_user=leo ansible_become=true
+172.16.1.14 node_name=kube-worker-14 k8s_role=worker ansible_ssh_user=leo ansible_become=true
+172.16.1.15 node_name=kube-worker-15 k8s_role=worker ansible_ssh_user=leo ansible_become=true
+172.16.1.16 node_name=kube-worker-16 k8s_role=worker ansible_ssh_user=leo ansible_become=true
+
+[kube_master:children]
+master
+kube_master_group
+
+[k8s:children]
+kube_master
+kube_worker

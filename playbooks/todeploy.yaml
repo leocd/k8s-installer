@@ -1,0 +1,8 @@
+---
+- name: 5. 集群Master高可用
+  gather_facts: true
+  hosts: all
+  become: true
+  roles:
+    - deploy
+  tags: deploy

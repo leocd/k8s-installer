@@ -1,0 +1,7 @@
+---
+- name: 安装nfs plugin
+  gather_facts: false
+  hosts: master
+  roles:
+    - nfs
+  tags: nfs

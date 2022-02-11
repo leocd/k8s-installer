@@ -1,0 +1,21 @@
+# generating by ansible
+
+/var/log/cron
+/var/log/maillog
+/var/log/messages
+/var/log/secure
+/var/log/spooler
+{
+    missingok
+    weekly
+    compress
+    notifempty
+    dateext
+    dateformat -%Y-%m-%d
+    rotate 12
+    create 0600 root root
+    sharedscripts
+    postrotate
+        /bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true
+    endscript
+}

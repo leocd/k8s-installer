@@ -1,0 +1,8 @@
+---
+- name: 3. 安装Kubelet
+  gather_facts: false
+  hosts: k8s
+  become: true
+  roles:
+    - kubelet
+  tags: kubelet

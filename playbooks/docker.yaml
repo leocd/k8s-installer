@@ -1,0 +1,8 @@
+---
+- name: 2. 集群docker组件安装
+  gather_facts: true
+  hosts: all
+  become: true
+  roles:
+    - docker
+  tags: docker

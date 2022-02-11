@@ -1,0 +1,35 @@
+---
+- name: 2.1 将业务用户添加至docker group，创建数据目录
+  shell: |
+    groupadd docker
+    gpasswd -a {{ global.user }} docker
+    mkdir -p {{ global.data_dir }}/docker/hub
+
+- name: 2.2 安装Docker
+  yum:
+    name: docker-ce,docker-ce-cli,containerd.io
+    state: present
+
+- name: 2.4 配置docker daemon
+  template:
+    dest: /etc/docker/daemon.json
+    src: daemon.json.j2
+
+- name: 2.5 配置docker service
+  template:
+    dest: /usr/lib/systemd/system/docker.service
+    src: docker.service.j2
+
+- name: 2.6 重启docker服务
+  shell: |
+    systemctl daemon-reload
+    systemctl restart docker
+    systemctl enable docker
+
+- name: 2.7 启动docker registry v2
+  when: inventory_hostname in groups['master']
+  shell: |
+    docker load -i registry.tar.gz
+    docker run -d -v {{ global.data_dir }}/docker/hub:/var/lib/registry -p 5000:5000 --restart=always --name registry2 registry:2
+  args:
+    chdir: "{{ global.app_dir }}/package"

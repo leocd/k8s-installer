@@ -1,0 +1,8 @@
+---
+- name: 4. kubeadm初始化集群
+  gather_facts: true
+  hosts: master
+  become: true
+  roles:
+    - kubeadm
+  tags: kubeadm

@@ -1,0 +1,90 @@
+---
+- name: 为操作节点设置path，生成token
+  when: inventory_hostname in groups['master']
+  shell: |
+    echo "export KUBECONFIG=/home/{{ global.user }}/.kube/config" >> /etc/profile
+    source /etc/profile
+    kubeadm token list | grep -v -w TOKEN | awk -F" " '{print "kubeadm token delete " $1}'|sh
+    kubeadm token create
+
+- name: 6.1 获取token
+  when: inventory_hostname in groups['master']
+  shell: ｜
+    source /etc/profile
+    kubeadm token list | awk -F" " '{print $1}' | tail -n 1
+  register: kubeadm_token
+
+- name: 6.2 获取hash
+  when: inventory_hostname in groups['master']
+  shell: |
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin \
+    -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: kubeadm_hash
+
+- name: 6.3 获取certkey
+  when: inventory_hostname in groups['master']
+  shell: |
+    source /etc/profile
+    kubeadm init phase upload-certs --upload-certs | tail -n 1
+  register: kubeadm_ckey
+
+- name: 6.4 其余Master节点加入集群
+  when: inventory_hostname in groups['kube_master_group']
+  shell: |
+    kubeadm join {{ k8s.vip_domain }}:{{ k8s.api_port }} --token {{ kubeadm_token.stdout }} \
+    --discovery-token-ca-cert-hash sha256:{{ kubeadm_hash.stdout }} \
+    --control-plane --certificate-key {{ kubeadm_ckey.stdout }}
+    sleep 300
+
+- name: 6.5 work节点加入集群
+  when: inventory_hostname in groups['kube_worker']
+  shell: |
+    kubeadm join {{ k8s.vip_domain }}:{{ k8s.api_port }} --token {{ kubeadm_token.stdout }} \
+    --discovery-token-ca-cert-hash sha256:{{ kubeadm_hash.stdout }}
+    sleep 300
+
+- name: 6.6 准备metrics-server yaml
+  when: inventory_hostname in groups['master']
+  template:
+    src: metrics-server.yaml.j2
+    dest: "{{ global.work_dir }}/metrics-server.yaml"
+
+- name: 6.7 安装metrics-server
+  when: inventory_hostname in groups['master']
+  shell: |
+    cd {{ global.work_dir }}/
+    kubectl apply -f metrics-server.yaml --kubeconfig=/home/{{ global.user }}//.kube/config
+
+- name: 6.8 准备coredns yaml
+  when: inventory_hostname in groups['master']
+  template:
+    src: coredns.yaml.j2
+    dest: "{{ global.work_dir }}/coredns.yaml"
+
+- name: 6.9 安装coredns
+  when: inventory_hostname in groups['master']
+  shell: |
+    cd {{ global.work_dir }}/
+    kubectl apply -f coredns.yaml --kubeconfig=/home/{{ global.user }}//.kube/config
+
+- name: 6.10 准备Calico yaml
+  when: inventory_hostname in groups['master']
+  template:
+    src: "calico.yaml.j2"
+    dest: "{{ global.work_dir }}/calico.yaml"
+
+- name: 6.11 安装Calico
+  when: inventory_hostname in groups['master']
+  shell: |
+    kubectl apply -f {{ global.work_dir }}/calico.yaml --kubeconfig=/home/{{ global.user }}//.kube/config
+
+- name: 6.12 准备nginx ingress yaml
+  when: inventory_hostname in groups['master']
+  template:
+    src: nginx-ingress.yaml.j2
+    dest: "{{ global.work_dir }}/nginx-ingress.yaml"
+
+- name: 6.13 安装nginx ingress
+  when: inventory_hostname in groups['master']
+  shell: |
+    kubectl apply -f {{ global.work_dir }}/nginx-ingress.yaml --kubeconfig=/home/{{ global.user }}//.kube/config

@@ -1,0 +1,11 @@
+---
+- name: 3.1 在所有k8s节点上安装kubelet
+  yum:
+    name: kubelet-1.18.19,kubeadm-1.18.19,kubectl-1.18.19
+    state: present
+
+- name: 3.2 在所有k8s节点上启动Kubelet服务
+  shell: |
+    systemctl daemon-reload
+    systemctl restart kubelet
+    systemctl enable kubelet

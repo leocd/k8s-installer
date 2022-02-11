@@ -1,0 +1,8 @@
+{% for host in groups['master'] %}
+{
+    "bip": "{{ k8s.bip }}",
+    "exec-opts":["native.cgroupdriver=systemd"],
+    "insecure-registries": ["{{ hostvars[host].inventory_hostname }}:5000","{{ k8s.hub }}:5000"],
+    "max-concurrent-downloads": 50
+}
+{% endfor %}

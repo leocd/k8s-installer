@@ -1,0 +1,9 @@
+{% for host in groups['k8s'] %}
+{{ hostvars[host].inventory_hostname }} {{ hostvars[host].node_name }}
+{% endfor %}
+
+{% for host in groups['master'] %}
+{{ hostvars[host].inventory_hostname }} {{ k8s.hub }}
+{% endfor %}
+
+{{ k8s.vip }} {{ k8s.vip_domain }}

@@ -1,0 +1,8 @@
+---
+- name: 1. 集群初始化与组件安装
+  gather_facts: true
+  hosts: all
+  become: true
+  roles:
+    - sysinit
+  tags: sysinit

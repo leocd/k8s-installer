@@ -1,0 +1,80 @@
+---
+- name: 1.0 批量修改集群hostname
+  shell: |
+    echo {{ node_name|quote }} > /etc/hostname
+    mkdir -p /tmp/ansible && chmod 755 /tmp/ansible
+    chown -R {{ global.user }} /tmp/ansible
+
+- name: 1.1 添加集群hosts映射
+  blockinfile:
+    dest: /etc/hosts
+    block: "{{ lookup('template', 'hosts.j2') }}"
+    marker: "#{mark} ANSIBLE ADD HOSTS"
+
+- name: 1.2 添加syslog
+  copy:
+    dest: /etc/logrotate.d/syslog
+    src: syslog
+
+- name: 1.3 添加sysctl参数
+  copy:
+    dest: /etc/sysctl.d/
+    src: k8s.conf
+    mode: '0755'
+
+- name: 1.4 添加ipvs模块
+  copy:
+    dest: /etc/sysconfig/modules/
+    src: ipvs.modules
+    mode: '0755'
+
+- name: 1.5 配置系统项
+  shell: |
+    swapoff -a
+    sed -i '/swap/ s/^\(.*\)$/#\1/g' /etc/fstab
+    modprobe br_netfilter
+
+    setenforce 0
+    sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+    systemctl stop firewalld
+    systemctl disable firewalld
+
+    iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat && iptables -P FORWARD ACCEPT
+
+    /bin/bash /etc/sysconfig/modules/ipvs.modules
+
+    sysctl --system
+
+- name: 1.6 更新limits.conf
+  blockinfile:
+    path: /etc/security/limits.conf
+    block: "{{ lookup('file', 'limits.conf') }}"
+    marker: "#{mark} SYSYINT ADD LIMITS"
+
+- name: 1.7 更新nproc.conf
+  lineinfile:
+    path: /etc/security/limits.d/20-nproc.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.path }}"
+    backrefs: yes
+  with_items:
+    - regexp: \*
+      line: '*  soft  nproc 204800'
+    - regexp: root
+      line: root  soft  nproc unlimited
+
+- name: 1.8 为集群服务器添加离线yum源
+  when: inventory_hostname not in groups['master']
+  template:
+    src: offline.repo.j2
+    dest: /etc/yum.repos.d/offline.repo
+
+- name: 1.9 集群服务器重新缓存yum源
+  shell: |
+    yum clean all && yum makecache
+
+- name: 1.10 安装工具包
+  yum:
+    name: nfs-utils,rpcbind,yum-utils,device-mapper-persistent-data,lvm2,wget,unzip
+    state: present

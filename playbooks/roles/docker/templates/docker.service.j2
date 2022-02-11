@@ -1,0 +1,39 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+BindsTo=containerd.service
+After=network-online.target containerd.service
+Wants=network-online.target
+Requires=docker.socket
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock \
+       --log-opt max-size=500m \
+       --log-opt max-file=20 \
+       --log-opt max-file=20 \
+       --data-root={{ global.data_dir }}/docker/lib \
+       --exec-root=/var/run/docker
+ExecReload=/bin/kill -s HUP $MAINPID
+
+StartLimitBurst=3
+StartLimitInterval=60s
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+
+# Uncomment TasksMax if your systemd version supports it.
+# Only systemd 226 and above support this version.
+#TasksMax=infinity
+
+TimeoutStartSec=0
+Delegate=yes
+KillMode=process
+Restart=always
+TimeoutSec=0
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+
