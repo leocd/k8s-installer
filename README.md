@@ -22,6 +22,6 @@ nginx ingress修改了一些默认参数，以提升性能
 
 ### TODO
 
-&#x274E; 添加EFK stack
-&#x274E; 添加prometheus stack
+&#x274E; 添加EFK stack  
+&#x274E; 添加prometheus stack  
 &#x274E; 用istio替换nginx ingress
