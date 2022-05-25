@@ -56,7 +56,7 @@
   lineinfile:
     path: /etc/security/limits.d/20-nproc.conf
     regexp: "{{ item.regexp }}"
-    line: "{{ item.path }}"
+    line: "{{ item.line }}"
     backrefs: yes
   with_items:
     - regexp: \*
