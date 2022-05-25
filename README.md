@@ -8,6 +8,7 @@ nginx ingress修改了一些默认参数，以提升性能
 
 ## 使用指南
 
+* ansible执行机需要与hosts文件中配置的master机器一致
 * 程序需直接放置在用户家目录下，示例：/home/leo可以，/home/leo/apps不可以，执行路径应该为/home/leo/k8s-installer
 * 因为访问gcr经常出现问题，因此使用docker registry v2把镜像load到本地，镜像包需要单独下载
 * 在进行操作前，请根据实际情况 `修改` 程序根目录下的hosts文件和playbooks/group_vars/all.yaml文件
