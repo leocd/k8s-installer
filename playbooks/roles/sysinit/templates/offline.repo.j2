@@ -1,6 +1,6 @@
 [offline]
 name=Local Repo
-{% for host in group['master'] %}
+{% for host in groups['master'] %}
 baseurl=http://{{ hostvars[host].inventory_hostname }}:6440/
 {% endfor %}
 gpgcheck=0
