@@ -6,7 +6,7 @@
 # Desc:    初始化脚本，完成ansible初始化、集群系统初始化和docker安装加速        #
 #########################################################################
 super=$(sudo -l | grep -c "(ALL) ALL")
-if [[ $super -eq 0 || $(whoami) = 'root' ]]; then
+if [[ $(whoami) = 'root' || $super -eq 0 ]]; then
     echo -e "\033[31m [ERROR] 请使用具备sudo权限的用户执行脚本,请勿使用root用户执行本脚本。 \033[0m"
     exit 1
 fi
@@ -15,7 +15,7 @@ if command -v docker &> /dev/null; then
     exit 1
 fi
 
-install_offlinerepo(){
+repo_init(){
     echo -e "\033[32m [INFO] 移除原有依赖,预防安装冲突。 \033[0m"
     sudo rpm -qa | grep libxml2 | xargs sudo rpm -e --nodeps
     sudo rpm -qa | grep deltarpm | xargs sudo rpm -e --nodeps
@@ -48,9 +48,9 @@ EOF
 install_ansible(){
     sudo yum install ansible -y
     sudo rm -rf /etc/ansible/*
-    touch /var/log/ansible.log
-    chown "$(whoami)"."$(whoami)" /var/log/ansible.log
-    chown "$(whoami)"."$(whoami)" /etc/ansible
+    sudo touch /var/log/ansible.log
+    sudo chown "$(whoami)"."$(whoami)" /var/log/ansible.log
+    sudo chown "$(whoami)"."$(whoami)" /etc/ansible
 }
 
 config_ansible(){
@@ -74,22 +74,14 @@ pipelining = True
 EOF
 }
 
-key_init(){
-    read -r -p '请确认集群内所有机器是否已对本机设置免密登录(y/n): ' keyauth
-    if [ "$keyauth" != 'y' ]; then
-    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa -q -b 2048
-    cp -p ~/.ssh/id_rsa.pub /tmp/id_rsa.pub
-    ansible-playbook playbooks/add_key.yaml
-    ansible-playbook laybooks/sysinit.yaml
-    ansible-playbook playbooks/docker.yaml
-  else
+sys_init(){
+    echo -e "\033[32m [INFO] 进行系统优化和安装docker \033[0m"
     ansible-playbook playbooks/sysinit.yaml
     ansible-playbook playbooks/docker.yaml
-  fi
 }
-
+repo_init
 install_ansible
 config_ansible
-key_init
+sys_init
 echo -e "\033[32m [INFO] 集群内所有服务将在1分钟后重启,在此期间请勿进行其它操作 \033[0m"
 echo -e "\033[32m [INFO] 请在重启完成后执行sh install.sh \033[0m"
