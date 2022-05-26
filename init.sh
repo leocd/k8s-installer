@@ -7,7 +7,7 @@
 #########################################################################
 super1=$(sudo -l | grep -c "(ALL) ALL")
 super2=$(sudo -l | grep -c "(ALL) NOPASSWD: ALL")
-if [[ $(whoami) = 'root' || $super1 -eq 0 || $super2 -eq 0 ]]; then
+if [[ $super1 -eq 0 ]] || [[ $super2 -eq 0 ]] && [[ $EUID -eq 0 ]]; then
     echo -e "\033[31m [ERROR] 请使用具备sudo权限的用户执行脚本,请勿使用root用户执行本脚本。 \033[0m"
     exit 1
 fi
