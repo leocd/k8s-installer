@@ -5,9 +5,8 @@
 # Date:    2020-09-21 10:02                                             #
 # Desc:    初始化脚本，完成ansible初始化、集群系统初始化和docker安装加速        #
 #########################################################################
-super1=$(sudo -l | grep -c "(ALL) ALL")
-super2=$(sudo -l | grep -c "(ALL) NOPASSWD: ALL")
-if [[ $super1 -eq 0 ]] || [[ $super2 -eq 0 ]] && [[ $EUID -eq 0 ]]; then
+super=$(sudo -l | grep -c "(ALL).*ALL")
+if [[ $super -eq 0 ]] || [[ $EUID -eq 0 ]]; then
     echo -e "\033[31m [ERROR] 请使用具备sudo权限的用户执行脚本,请勿使用root用户执行本脚本。 \033[0m"
     exit 1
 fi
