@@ -1,6 +1,7 @@
 ---
 - name: 加载镜像包
   shell: |
+    mkdir -p {{ sys.work_dir }}
     docker load -i k8s.tar.gz
     docker images | grep -v -w IMAGE | sed 's#harbor.kubernetes.lo#{{ k8s.hub }}:5000#g' | awk '{print "docker tag"" " $3" "$1":"$2}'|sh
     docker images | grep -v -w IMAGE | grep harbor.kubernetes.lo | awk '{print "docker rmi"" "$1":"$2}'|sh
