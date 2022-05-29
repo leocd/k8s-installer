@@ -4,6 +4,7 @@
 # Contact: leo@leocd.com                                                #
 # Date:    2020-09-21 10:02                                             #
 # Desc:    完成ansible初始化、集群系统初始化和docker安装加速、k8s集群和组建安装  #
+# Last Modify:  2022-05-29 11:20                                        #
 #########################################################################
 super=$(sudo -l | grep -c "(ALL).*ALL")
 root_case=$(diname "$0")
