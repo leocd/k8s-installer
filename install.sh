@@ -7,7 +7,7 @@
 # Last Modify:  2022-05-29 11:20                                        #
 #########################################################################
 super=$(sudo -l | grep -c "(ALL).*ALL")
-root_case=$(diname "$0")
+root_case=$(dirname "$(readlink -f "$0")")
 if [[ $super -eq 0 ]] || [[ $EUID -eq 0 ]]; then
     echo -e "\033[31m [ERROR] 请使用具备sudo权限的用户执行脚本,请勿使用root用户执行本脚本。 \033[0m"
     exit 1
@@ -61,7 +61,7 @@ install_ansible(){
 }
 
 config_ansible(){
-    cp hosts /etc/ansible/hosts
+    cp "$root_case"/hosts /etc/ansible/hosts
     echo -e "\033[32m [INFO] 修改ansible配置文件 \033[0m"
     cat <<EOF > /etc/ansible/ansible.cfg
 [defaults]
@@ -83,15 +83,15 @@ EOF
 sys_init(){
     echo -e "\033[32m [INFO] 进行系统优化和安装docker \033[0m"
     ansible all -m shell -a "mkdir -p /tmp/ansible && chmod 755 /tmp/ansible"
-    ansible-playbook playbooks/sysinit.yaml
-    ansible-playbook playbooks/docker.yaml
+    ansible-playbook "$root_case"/playbooks/sysinit.yaml
+    ansible-playbook "$root_case"/playbooks/docker.yaml
 }
 
 k8s_install(){
   echo "开始安装k8s"
-  ansible-playbook playbooks/kubelet.yaml
-  ansible-playbook playbooks/kubeadm.yaml
-  ansible-playbook playbooks/todeploy.yaml
+  ansible-playbook "$root_case"/playbooks/kubelet.yaml
+  ansible-playbook "$root_case"/playbooks/kubeadm.yaml
+  ansible-playbook "$root_case"/playbooks/todeploy.yaml
 }
 
 nfs_plugin(){
@@ -105,7 +105,7 @@ nfs_plugin(){
   else
     read -r -p '请输入nfs服务器的IP或者域名: ' address
     read -r -p '请输入nfs服务器提供的完整共享路径(如/home/share): ' sharedir
-    ansible-playbook playbooks/nfs-sc.yaml -e 'nfs_address='$address' nfs_dir='$sharedir''
+    ansible-playbook "$root_case"/playbooks/nfs-sc.yaml -e 'nfs_address='$address' nfs_dir='$sharedir''
   fi
 }
 

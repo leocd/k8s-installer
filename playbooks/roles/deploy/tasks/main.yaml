@@ -29,6 +29,7 @@
   register: kubeadm_ckey
 
 - name: 6.4 将上述结果注册为变量
+  when: inventory_hostname in groups['master']
   set_fact:
     kubeadm_token={{ kubeadm_token.stdout }}
     kubeadm_hash={{ kubeadm_hash.stdout }}
