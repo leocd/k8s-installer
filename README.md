@@ -4,7 +4,7 @@
 默认安装了metrics-server、calico、nginx ingress、nfs provisioner  
 默认使用nfs作为storageclass  
 nginx ingress修改了一些默认参数，以提升性能  
-安装需要提供额外的负载均衡和nfs server，本程序未集成安装
+安装需要提供额外的负载均衡(单master不需要)和nfs server，本程序未集成安装
 
 ## 使用指南
 
