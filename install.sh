@@ -67,7 +67,6 @@ config_ansible(){
 [defaults]
 inventory      = /etc/ansible/hosts
 forks          = 50
-become         = root
 remote_port    = 22
 host_key_checking = False
 timeout           = 10
