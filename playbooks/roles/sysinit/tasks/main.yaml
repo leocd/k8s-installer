@@ -2,6 +2,7 @@
 - name: 1.0 批量修改集群hostname
   shell: |
     echo {{ node_name|quote }} > /etc/hostname
+    hostname {{ node_name|quote }}
 
 - name: 1.1 添加集群hosts映射
   blockinfile:
