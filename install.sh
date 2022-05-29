@@ -114,5 +114,5 @@ install_ansible
 config_ansible
 sys_init
 k8s_install
-nfs_plugin
 echo  -e "\033[32m [INFO] 集群安装完毕, Enjoy it! \033[0m"
+nfs_plugin
