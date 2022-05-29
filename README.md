@@ -17,7 +17,7 @@ nginx ingress修改了一些默认参数，以提升性能
 
 ### 镜像包下载地址
 
-[点这里](https://share.weiyun.com/gAts26OA)  
+[点这里](https://share.weiyun.com/f4KcnWtl)
 下载后放在package目录下，执行`tar xf package.tar.gz`
 
 ### TODO
