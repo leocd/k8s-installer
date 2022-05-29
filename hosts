@@ -5,7 +5,7 @@
 # ansible master节点同时会run docker registry v2
 # node_name切勿重复，最好依照本文件格式命名
 
-[kube_master_group]
+[kube_master_group] # 不做高可用时，删除本主机组，同时需要将all.yaml中的ha_mode设置为0
 172.16.1.11 node_name=kube-master-11 k8s_role=master ansible_ssh_user=leo ansible_ssh_pass=123456 ansible_sudo_pass=123456
 172.16.1.12 node_name=kube-master-12 k8s_role=master ansible_ssh_user=leo ansible_ssh_pass=123456 ansible_sudo_pass=123456
 
@@ -15,11 +15,7 @@
 172.16.1.15 node_name=kube-worker-15 k8s_role=worker ansible_ssh_user=leo ansible_ssh_pass=123456 ansible_sudo_pass=123456
 172.16.1.16 node_name=kube-worker-16 k8s_role=worker ansible_ssh_user=leo ansible_ssh_pass=123456 ansible_sudo_pass=123456
 
-[kube_master:children]
-master
-kube_master_group
-
 [k8s:children]
 master
-kube_master_group
+kube_master_group # 不做高可用时，删除本行
 kube_worker

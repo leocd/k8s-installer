@@ -6,8 +6,7 @@
 
 - name: 安装provisioner
   shell: |
-    cd {{ sys.work_dir }}
-    kubectl apply -f provisioner.yaml --kubeconfig=/home/{{ sys.user }}//.kube/config
+    kubectl apply -f {{ sys.work_dir }}/provisioner.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
 
 - name: 准备storageclass yaml
   copy:
@@ -16,5 +15,4 @@
 
 - name: 设置storageclass
   shell: |
-    cd {{ sys.work_dir }}
-    kubectl apply -f sc.yaml --kubeconfig=/home/{{ sys.user }}//.kube/configs
+    kubectl apply -f {{ sys.work_dir }}/sc.yaml --kubeconfig=/home/{{ sys.user }}/.kube/configs

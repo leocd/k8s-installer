@@ -2,8 +2,6 @@
 - name: 1.0 批量修改集群hostname
   shell: |
     echo {{ node_name|quote }} > /etc/hostname
-    mkdir -p /tmp/ansible && chmod 755 /tmp/ansible
-    chown -R {{ sys.user }} /tmp/ansible
 
 - name: 1.1 添加集群hosts映射
   blockinfile:

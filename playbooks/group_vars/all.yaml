@@ -5,6 +5,7 @@ sys:
   data_dir: "/data" # docker和kubernetes使用的数据目录，系统挂载的数据盘
 
 k8s:
+  ha_mode: 1 # 是否搭建集群master高可用模式，1为是，0为否，与hosts文件中kube_master_group设置要一致
   vip: "172.16.16.16" # 分配给集群master使用的负载均衡器IP，如果是单master则为master ip
   api_port: 6443 # 请勿修改
   vip_domain: "vip.kubernetes.local" # 集群内部使用域名请勿修改
