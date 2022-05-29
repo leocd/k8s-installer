@@ -2,19 +2,19 @@
 - name: 准备provisioner yaml
   template:
     src:  provisioner.yaml.j2
-    dest: "{{ global.work_dir }}/provisioner.yaml"
+    dest: "{{ sys.work_dir }}/provisioner.yaml"
 
 - name: 安装provisioner
   shell: |
-    cd {{ global.work_dir }}
-    kubectl apply -f provisioner.yaml --kubeconfig=/home/{{ global.user }}//.kube/config
+    cd {{ sys.work_dir }}
+    kubectl apply -f provisioner.yaml --kubeconfig=/home/{{ sys.user }}//.kube/config
 
 - name: 准备storageclass yaml
   copy:
     src: sc.yaml
-    dest: "{{ global.work_dir }}/"
+    dest: "{{ sys.work_dir }}/"
 
 - name: 设置storageclass
   shell: |
-    cd {{ global.work_dir }}
-    kubectl apply -f sc.yaml --kubeconfig=/home/{{ global.user }}//.kube/configs
+    cd {{ sys.work_dir }}
+    kubectl apply -f sc.yaml --kubeconfig=/home/{{ sys.user }}//.kube/configs

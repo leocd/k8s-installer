@@ -6,20 +6,20 @@
     docker images | grep -v -w IMAGE | grep harbor.kubernetes.lo | awk '{print "docker rmi"" "$1":"$2}'|sh
     docker images | grep {{ k8s.hub }} | awk '{print "docker push"" "$1":"$2}'|sh
   args:
-    chdir: "{{ global.app_dir }}/package"
+    chdir: "{{ sys.app_dir }}/package"
 
 - name: 4.1 生成kubeadm配置文件
   template:
-    dest: "{{ global.work_dir }}/kubeadm-config.yaml"
+    dest: "{{ sys.work_dir }}/kubeadm-config.yaml"
     src: kubeadm-config.yaml.j2
 
 - name: 4.2 初始化集群第一个节点
   shell: |
-    mkdir -p /home/{{ global.user }}/.kube
-    kubeadm init --config={{ global.work_dir }}/kubeadm-config.yaml --upload-certs
-    cp -i /etc/kubernetes/admin.conf /home/{{ global.user }}/.kube/config
-    chown -R {{ global.user }}:{{ global.user }} /home/{{ global.user }}/.kube
+    mkdir -p /home/{{ sys.user }}/.kube
+    kubeadm init --config={{ sys.work_dir }}/kubeadm-config.yaml --upload-certs
+    cp -i /etc/kubernetes/admin.conf /home/{{ sys.user }}/.kube/config
+    chown -R {{ sys.user }}:{{ sys.user }} /home/{{ sys.user }}/.kube
 
 - name: 4.3 修改yaml文件存储位置权限
   shell: |
-    chown -R {{ global.user }}:{{ global.user }} {{ global.work_dir }}
+    chown -R {{ sys.user }}:{{ sys.user }} {{ sys.work_dir }}

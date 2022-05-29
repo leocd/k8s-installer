@@ -2,8 +2,9 @@
 - name: 2.1 将业务用户添加至docker group，创建数据目录
   shell: |
     groupadd docker
-    gpasswd -a {{ global.user }} docker
-    mkdir -p {{ global.data_dir }}/docker/hub
+    mkdir -p /etc/docker
+    gpasswd -a {{ sys.user }} docker
+    mkdir -p {{ sys.data_dir }}/docker/hub
 
 - name: 2.2 安装Docker
   yum:
@@ -30,6 +31,6 @@
   when: inventory_hostname in groups['master']
   shell: |
     docker load -i registry.tar.gz
-    docker run -d -v {{ global.data_dir }}/docker/hub:/var/lib/registry -p 5000:5000 --restart=always --name registry2 registry:2
+    docker run -d -v {{ sys.data_dir }}/docker/hub:/var/lib/registry -p 5000:5000 --restart=always --name registry2 registry:2
   args:
-    chdir: "{{ global.app_dir }}/package"
+    chdir: "{{ sys.app_dir }}/package"

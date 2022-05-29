@@ -12,7 +12,7 @@ ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
        --log-opt max-size=500m \
        --log-opt max-file=20 \
        --log-opt max-file=20 \
-       --data-root={{ global.data_dir }}/docker/lib \
+       --data-root={{ sys.data_dir }}/docker/lib \
        --exec-root=/var/run/docker
 ExecReload=/bin/kill -s HUP $MAINPID
 

@@ -13,8 +13,7 @@ nginx ingress修改了一些默认参数，以提升性能
 * 因为访问gcr经常出现问题，因此使用docker registry v2把镜像load到本地，镜像包需要单独下载
 * 在进行操作前，请根据实际情况 `修改` 程序根目录下的hosts文件和playbooks/group_vars/all.yaml文件
 * 修改前请 `务必仔细阅读` 两个文件中的注释部分
-* 修改完成后，输入sh init.sh进行内核升级等操作
-* 待机器重启完毕后输入sh install.sh进行k8s集群安装
+* 修改完成后，输入sh install.sh进行k8s集群安装
 
 ### 镜像包下载地址
 

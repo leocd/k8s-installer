@@ -1,4 +1,4 @@
-global:
+sys:
   user: "leo" # ansible、k8s使用用户，需要具备sudo权限，hosts文件中也有该配置，两者需一致
   app_dir: "/home/leo/k8s-installer" # 程序执行目录
   work_dir: "/opt/ansible/tmp"
@@ -6,11 +6,9 @@ global:
 
 k8s:
   vip: "172.16.16.16" # 分配给集群master使用的负载均衡器IP，如果是单master则为master ip
-  gw_vip: "172.16.16.1" # 外部访问集群内应用使用的负载均衡器IP，一定不可以是worker节点的IP
   api_port: 6443 # 请勿修改
   vip_domain: "vip.kubernetes.local" # 集群内部使用域名请勿修改
   # 负载均衡设置：master使用的负载均衡负载到所有master节点的6443端口，监听6443端口
-  # 应用使用的负载均衡负载到所有worker节点的80/443端口，监听80/443端口（80对80，443对443）
   # 健康检查策略为超时3s、间隔5s、重试2次，算法为轮询
   service_subnet: "10.10.0.0/16"
   pod_subnet: "10.11.0.0/16"
