@@ -1,12 +1,4 @@
 ---
-- name: 为操作节点设置path，生成token
-  when: inventory_hostname in groups['master']
-  shell: |
-    echo "export KUBECONFIG=/home/{{ sys.user }}/.kube/config" >> /etc/profile
-    source /etc/profile
-    kubeadm token list | grep -v -w TOKEN | awk -F" " '{print "kubeadm token delete " $1}'|sh
-    kubeadm token create
-
 - name: 6.1 获取token
   when: inventory_hostname in groups['master']
   shell: |
@@ -29,11 +21,10 @@
   register: kubeadm_ckey
 
 - name: 6.4 将上述结果注册为变量
-  when: inventory_hostname in groups['master']
   set_fact:
-    kubeadm_token={{ kubeadm_token.stdout }}
-    kubeadm_hash={{ kubeadm_hash.stdout }}
-    kubeadm_ckey={{ kubeadm_ckey.stdout }}
+    kubeadm_token: "{{ hostvars[groups['master'][0]].kubeadm_token.stdout }}"
+    kubeadm_hash: "{{ hostvars[groups['master'][0]].kubeadm_hash.stdout }}"
+    kubeadm_ckey: "{{ hostvars[groups['master'][0]].kubeadm_ckey.stdout }}"
 
 - name: 6.5 其余Master节点加入集群
   when: k8s.ha_mode == "1" and inventory_hostname in groups['kube_master_group']
