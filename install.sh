@@ -95,17 +95,14 @@ k8s_install(){
   ansible-playbook "$root_case"/playbooks/kubelet.yaml
   ansible-playbook "$root_case"/playbooks/kubeadm.yaml
   ansible-playbook "$root_case"/playbooks/todeploy.yaml
-  echo  -e "\033[32m [INFO] 集群安装完毕, Enjoy it! \033[0m"
-  echo  -e "\033[32m [INFO] 集群安装完毕, Enjoy it! \033[0m"
 }
 
 nfs_plugin(){
-  echo "本脚本只安装k8s nfs plugin,不提供nfs服务安装功能,在进行安装之前,请确认您的环境中已具备可用的nfs服务"
-  read -r -p '是否安装nfs plugin作为k8s默认的storageclass?(y/n): ' confire
+  echo "本脚本只安装k8s nfs plugin,不提供nfs服务安装功能。"
+  read -r -p '您的环境中是否已具备可用的nfs服务?(y/n): ' confire
   if [ "$confire" != 'y' ]; then
-    echo "您也可用在做好准备后执行下述命令进行安装:"
+    echo "您也可以在做好准备后执行下述命令进行安装:"
     echo "ansible-playbook playbooks/nfs-sc.yaml -e 'nfs_address='nfs服务器地址' nfs_dir='共享路径''"
-    exit 1
   else
     read -r -p '请输入nfs服务器的IP或者域名: ' address
     read -r -p '请输入nfs服务器提供的完整共享路径(如/home/share): ' sharedir
@@ -119,3 +116,5 @@ config_ansible
 sys_init
 k8s_install
 nfs_plugin
+echo  -e "\033[32m [INFO] 集群安装完毕, Enjoy it! \033[0m"
+echo  -e "\033[32m [INFO] 集群安装完毕, Enjoy it! \033[0m"
