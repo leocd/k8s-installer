@@ -15,4 +15,4 @@
 
 - name: 设置storageclass
   shell: |
-    kubectl apply -f {{ sys.work_dir }}/sc.yaml --kubeconfig=/home/{{ sys.user }}/.kube/configs
+    kubectl apply -f {{ sys.work_dir }}/sc.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
