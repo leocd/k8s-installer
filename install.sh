@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-#########################################################################
-# Author:  Leo Lou                                                      #
-# Contact: leo@leocd.com                                                #
-# Date:    2020-09-21 10:02                                             #
-# Desc:    完成ansible初始化、集群系统初始化和docker安装加速、k8s集群和组建安装  #
-# Last Modify:  2022-05-29 11:20                                        #
-#########################################################################
+#############################################################################
+# Author:  Leo Lou                                                          #
+# Contact: leo@leocd.com                                                    #
+# Date:    2020-09-21 10:02                                                 #
+# Desc:    完成ansible和系统初始化、k8s集群和组件安装                          #
+# Last Modify:  2022-05-29 11:20                                            #
+#############################################################################
 super=$(sudo -l | grep -c "(ALL).*ALL")
 root_case=$(dirname "$(readlink -f "$0")")
 if [[ $super -eq 0 ]] || [[ $EUID -eq 0 ]]; then
@@ -20,24 +20,27 @@ if command -v kubectl &> /dev/null; then
     echo -e "\033[31m [ERROR] 您的系统已经安装了kubernetes,无法运行本脚本。 \033[0m"
     exit 1
 fi
+set -e
+set -u
+set -o pipefail
 
 repo_init(){
     echo -e "\033[32m [INFO] 移除原有依赖,预防安装冲突。 \033[0m"
-    sudo rpm -qa | grep libxml2 | xargs sudo rpm -e --nodeps
-    sudo rpm -qa | grep deltarpm | xargs sudo rpm -e --nodeps
-    sudo rpm -qa | grep createrepo | xargs sudo rpm -e --nodeps
+    sudo rpm -qa | grep libxml2 | xargs sudo rpm -e --nodeps || true
+    sudo rpm -qa | grep deltarpm | xargs sudo rpm -e --nodeps || true
+    sudo rpm -qa | grep createrepo | xargs sudo rpm -e --nodeps || true
 
     echo -e "\033[32m [INFO] 安装createrepo,创建离线源。 \033[0m"
     cd package || exit
-    sudo rpm -ivh createc/deltarpm-3.6-3.el7.x86_64.rpm
-    sudo rpm -ivh createc/python-deltarpm-3.6-3.el7.x86_64.rpm
-    sudo rpm -ivh createc/libxml2-2.9.1-6.el7.5.x86_64.rpm
-    sudo rpm -ivh createc/libxml2-python-2.9.1-6.el7.5.x86_64.rpm
-    sudo rpm -ivh createc/createrepo-0.9.9-28.el7.noarch.rpm
+    sudo rpm -ivh createc/deltarpm-3.6-3.el7.x86_64.rpm || true
+    sudo rpm -ivh createc/python-deltarpm-3.6-3.el7.x86_64.rpm || true
+    sudo rpm -ivh createc/libxml2-2.9.1-6.el7.5.x86_64.rpm || true
+    sudo rpm -ivh createc/libxml2-python-2.9.1-6.el7.5.x86_64.rpm || true
+    sudo rpm -ivh createc/createrepo-0.9.9-28.el7.noarch.rpm || true
 
     sudo tar xf rpm_offline.tgz -C /opt/
     sudo createrepo -v /opt/rpm_offline
-    cd /opt/rpm_offline && sudo python -m SimpleHTTPServer 6440 &
+    cd /opt/rpm_offline && sudo python -m SimpleHTTPServer 6440 & || true
     cd "$root_case" || exit
     sleep 5
 
@@ -53,7 +56,7 @@ EOF
 }
 
 install_ansible(){
-    sudo yum install ansible -y
+    sudo yum install ansible -y || true
     sudo rm -rf /etc/ansible/*
     sudo touch /var/log/ansible.log
     sudo chown "$(whoami)"."$(whoami)" /var/log/ansible.log
