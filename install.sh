@@ -40,7 +40,7 @@ repo_init(){
 
     sudo tar xf rpm_offline.tgz -C /opt/
     sudo createrepo -v /opt/rpm_offline
-    cd /opt/rpm_offline && sudo python -m SimpleHTTPServer 6440 & || true
+    cd /opt/rpm_offline && sudo nohup python -m SimpleHTTPServer 6440 &
     cd "$root_case" || exit
     sleep 5
 
