@@ -27,7 +27,7 @@
     kubeadm_ckey: "{{ hostvars[groups['master'][0]].kubeadm_ckey.stdout }}"
 
 - name: 6.5 其余Master节点加入集群
-  when: k8s.ha_mode == "1" and inventory_hostname in groups['kube_master_group']
+  when: k8s.ha_mode|int == 1 and inventory_hostname in groups['kube_master_group']
   shell: |
     kubeadm join {{ k8s.vip_domain }}:{{ k8s.api_port }} --token {{ kubeadm_token }} \
     --discovery-token-ca-cert-hash sha256:{{ kubeadm_hash }} \
