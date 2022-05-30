@@ -3,7 +3,7 @@
   when: inventory_hostname in groups['master']
   shell: |
     source /etc/profile
-    kubeadm token list | awk -F" " '{print $1}' | tail -n 1
+    kubeadm token list | grep authentication | awk -F" " '{print $1}' | tail -n 1
   register: kubeadm_token
 
 - name: 6.2 获取hash
