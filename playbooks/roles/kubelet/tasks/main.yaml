@@ -1,7 +1,7 @@
 ---
 - name: 3.1 在所有k8s节点上安装kubelet
   yum:
-    name: kubelet-1.18.19,kubeadm-1.18.19,kubectl-1.18.19
+    name: kubelet-1.19.16,kubeadm-1.19.16,kubectl-1.19.16
     state: present
 
 - name: 3.2 在所有k8s节点上启动Kubelet服务

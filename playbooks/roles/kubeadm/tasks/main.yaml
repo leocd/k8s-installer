@@ -18,9 +18,14 @@
   shell: |
     mkdir -p /home/{{ sys.user }}/.kube
     kubeadm init --config={{ sys.work_dir }}/kubeadm-config.yaml --upload-certs
+
+- name: 4.3 延长集群证书有效期
+  raw: |
+    cd "{{ sys.app_dir }}/scripts" || exit
+    bash update-kubeadm-cert.sh all
     cp -i /etc/kubernetes/admin.conf /home/{{ sys.user }}/.kube/config
     chown -R {{ sys.user }}:{{ sys.user }} /home/{{ sys.user }}/.kube
 
-- name: 4.3 修改yaml文件存储位置权限
+- name: 4.4 修改yaml文件存储位置权限
   shell: |
     chown -R {{ sys.user }}:{{ sys.user }} {{ sys.work_dir }}

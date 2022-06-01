@@ -4,7 +4,12 @@
 默认安装了metrics-server、calico、nginx ingress、nfs provisioner  
 默认使用nfs作为storageclass  
 nginx ingress修改了一些默认参数，以提升性能  
-安装需要提供额外的负载均衡(单master不需要)和nfs server，本程序未集成安装
+安装需要提供额外的负载均衡(单master不需要)和nfs server，本程序未集成安装  
+
+## 升级日志
+
+2022-06-01 升级集群到1.19.16版本，准备另作一个1.20.x之后版本的程序
+2022-06-01 延长集群证书有效期，由于ca证书有效期的关系，暂时修改为10年后到期
 
 ## 使用指南
 
@@ -18,7 +23,7 @@ nginx ingress修改了一些默认参数，以提升性能
 
 ### 镜像包下载地址
 
-[点这里](https://share.weiyun.com/f4KcnWtl)
+[点这里](https://share.weiyun.com/QeEEUNwj)
 下载后放在package目录下，执行`tar xf package.tar.gz`
 
 ### TODO
