@@ -34,53 +34,65 @@
     --control-plane --certificate-key {{ kubeadm_ckey }}
     sleep 300
 
-- name: 6.6 work节点加入集群
+- name: 6.6 将证书更新脚本分发到其余Master节点
+  when: k8s.ha_mode|int == 1 and inventory_hostname in groups['kube_master_group']
+  copy:
+    src: "{{ sys.app_dir }}/scripts/update-kubeadm-cert.sh"
+    dest: "{{ sys.work_dir }}/update-kubeadm-cert.sh"
+
+- name: 6.7 其余Master节点更新证书
+  when: k8s.ha_mode|int == 1 and inventory_hostname in groups['kube_master_group']
+  raw: |
+    cd {{ sys.work_dir }} || exit
+    bash update-kubeadm-cert.sh all
+
+- name: 6.8 work节点加入集群
   when: inventory_hostname in groups['kube_worker']
   shell: |
     kubeadm join {{ k8s.vip_domain }}:{{ k8s.api_port }} --token {{ kubeadm_token }} \
     --discovery-token-ca-cert-hash sha256:{{ kubeadm_hash }}
     sleep 300
 
-- name: 6.7 准备metrics-server yaml
+- name: 6.9 准备metrics-server yaml
   when: inventory_hostname in groups['master']
   template:
     src: metrics-server.yaml.j2
     dest: "{{ sys.work_dir }}/metrics-server.yaml"
 
-- name: 6.8 安装metrics-server
+- name: 6.10 安装metrics-server
   when: inventory_hostname in groups['master']
   shell: |
     kubectl apply -f {{ sys.work_dir }}/metrics-server.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
 
-- name: 6.9 准备coredns yaml
+- name: 6.11 准备coredns yaml
   when: inventory_hostname in groups['master']
   template:
     src: coredns.yaml.j2
     dest: "{{ sys.work_dir }}/coredns.yaml"
 
-- name: 6.10 安装coredns
+- name: 6.12 安装coredns
   when: inventory_hostname in groups['master']
   shell: |
     kubectl apply -f {{ sys.work_dir }}/coredns.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
 
-- name: 6.11 准备Calico yaml
+- name: 6.13 准备Calico yaml
   when: inventory_hostname in groups['master']
   template:
     src: "calico.yaml.j2"
     dest: "{{ sys.work_dir }}/calico.yaml"
 
-- name: 6.12 安装Calico
+- name: 6.14 安装Calico
   when: inventory_hostname in groups['master']
   shell: |
     kubectl apply -f {{ sys.work_dir }}/calico.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
 
-- name: 6.13 准备nginx ingress yaml
+- name: 6.15 准备nginx ingress yaml
   when: inventory_hostname in groups['master']
   template:
     src: nginx-ingress.yaml.j2
     dest: "{{ sys.work_dir }}/nginx-ingress.yaml"
 
-- name: 6.14 安装nginx ingress
+- name: 6.16 安装nginx ingress
   when: inventory_hostname in groups['master']
   shell: |
     kubectl apply -f {{ sys.work_dir }}/nginx-ingress.yaml --kubeconfig=/home/{{ sys.user }}/.kube/config
