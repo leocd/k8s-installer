@@ -38,12 +38,12 @@
   when: k8s.ha_mode|int == 1 and inventory_hostname in groups['kube_master_group']
   copy:
     src: "{{ sys.app_dir }}/scripts/update-kubeadm-cert.sh"
-    dest: "{{ sys.work_dir }}/update-kubeadm-cert.sh"
+    dest: /tmp/update-kubeadm-cert.sh
 
 - name: 6.7 其余Master节点更新证书
   when: k8s.ha_mode|int == 1 and inventory_hostname in groups['kube_master_group']
   raw: |
-    cd {{ sys.work_dir }} || exit
+    cd /tmp || exit
     bash update-kubeadm-cert.sh all
 
 - name: 6.8 work节点加入集群
