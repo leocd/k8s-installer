@@ -23,7 +23,7 @@
   raw: |
     cd "{{ sys.app_dir }}/scripts" || exit
     bash update-kubeadm-cert.sh all
-    cp -i /etc/kubernetes/admin.conf /home/{{ sys.user }}/.kube/config
+    cp -f /etc/kubernetes/admin.conf /home/{{ sys.user }}/.kube/config
     chown -R {{ sys.user }}:{{ sys.user }} /home/{{ sys.user }}/.kube
 
 - name: 4.4 修改yaml文件存储位置权限
